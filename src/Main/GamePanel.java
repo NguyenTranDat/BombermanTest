@@ -3,6 +3,7 @@ package Main;
 import Character.Bomber.Bomber;
 import Character.Monster.*;
 import Constant.Const;
+import Menu.Start.StartScreen;
 import StillEntity.Item.*;
 import StillEntity.Map;
 import StillEntity.Still;
@@ -21,7 +22,7 @@ public class GamePanel extends JPanel implements Const, Runnable {
 
     protected int screenWidth;
     protected int screenHeight;
-    protected int level = 1;
+    private static int level = 0;
 
     protected BufferedImage view;
 
@@ -29,6 +30,8 @@ public class GamePanel extends JPanel implements Const, Runnable {
     private final Bomber bomber = new Bomber();
     private final ArrayList<Monster> monsters = new ArrayList<>();
     Map map = new Map();
+
+    StartScreen startScreen = new StartScreen("STAGE " + level);
 
     private static int countBoom = Bomber.getCountBoom();
 
@@ -46,7 +49,7 @@ public class GamePanel extends JPanel implements Const, Runnable {
         this.monsters.clear();
 
         try {
-            Scanner in = new Scanner(new File("src/Stage/stage" + level + ".txt"));
+            Scanner in = new Scanner(new File("src/Stage/stage" + (level + 1) + ".txt"));
 
             level = in.nextInt();
             int height = in.nextInt();
@@ -119,7 +122,7 @@ public class GamePanel extends JPanel implements Const, Runnable {
     }
 
     public void update() {
-
+        if(!StartScreen.isHidden()) return;
         if (this.bomber.getDie()) {
             this.bomber.update();
             return;
@@ -174,13 +177,20 @@ public class GamePanel extends JPanel implements Const, Runnable {
 
     public void draw() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
-        g2.setColor(new Color(56, 135, 0));
-        g2.fillRect(0, 0, screenWidth, screenHeight);
 
-        map.render(g2);
-        this.bomber.render(g2);
-        for (Monster monster : monsters) {
-            monster.render(g2);
+        if (!StartScreen.isHidden()) {
+            g2.setColor(Color.black);
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+            startScreen.update();
+            startScreen.render(g2);
+        } else {
+            g2.setColor(new Color(56, 135, 0));
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+            map.render(g2);
+            this.bomber.render(g2);
+            for (Monster monster : monsters) {
+                monster.render(g2);
+            }
         }
 
         Graphics g = getGraphics();
@@ -193,5 +203,9 @@ public class GamePanel extends JPanel implements Const, Runnable {
             return;
         }
         GamePanel.countBoom++;
+    }
+
+    public static int getLevel() {
+        return level;
     }
 }
