@@ -3,6 +3,8 @@ package Main;
 import Character.Bomber.Bomber;
 import Character.Monster.*;
 import Constant.Const;
+import Menu.Infor.*;
+import Menu.Infor.Frame;
 import Menu.Start.StartScreen;
 import StillEntity.Item.*;
 import StillEntity.Map;
@@ -23,6 +25,7 @@ public class GamePanel extends JPanel implements Const, Runnable {
     protected int screenWidth;
     protected int screenHeight;
     private static int level = 0;
+    private static int score = 0;
 
     protected BufferedImage view;
 
@@ -31,7 +34,7 @@ public class GamePanel extends JPanel implements Const, Runnable {
     private final ArrayList<Monster> monsters = new ArrayList<>();
     Map map = new Map();
 
-    StartScreen startScreen = new StartScreen("STAGE " + level);
+    StartScreen startScreen = new StartScreen("STAGE " + (level+1));
 
     private static int countBoom = Bomber.getCountBoom();
 
@@ -140,7 +143,6 @@ public class GamePanel extends JPanel implements Const, Runnable {
         }
 
         if (this.keyHandler.isBoom()) {
-            System.out.println(GamePanel.countBoom);
             if (Map.getMap(this.bomber.getX() / size, this.bomber.getY() / size) != hashCodeBoom) {
                 if (GamePanel.countBoom > 0) {
                     Map.setMap(this.bomber.getX() / size, this.bomber.getY() / size, 3);
@@ -152,17 +154,22 @@ public class GamePanel extends JPanel implements Const, Runnable {
 
         this.bomber.update();
 
-        for (int i = this.monsters.size() - 1; i >= 0; --i) {
-            if (monsters.get(i).getDie()) {
-                monsters.remove(i);
-            } else {
-                monsters.get(i).move(bomber.getX(), bomber.getY());
-                monsters.get(i).update();
-                if (monsters.get(i).getX() / size == bomber.getX() / size && monsters.get(i).getY() / size == bomber.getY() / size) {
-                    if (!monsters.get(i).isDie()) bomber.setDie();
-                }
+        for(Monster monster: monsters) {
+            monster.move(bomber.getX(), bomber.getY());
+            monster.update();
+
+            if(monster.getX() / size == bomber.getX() && monster.getY() /size == bomber.getY()/size) {
+                if(monster.isDie()) bomber.setDie();
             }
         }
+
+        for(Monster monster: monsters) {
+            if(monster.getDie()) {
+                score += monster.getScore();
+            }
+        }
+
+        monsters.removeIf(monster -> monster.getDie());
 
         for (int i = 0; ; ++i) {
             Still still = Map.getStill(i);
@@ -191,11 +198,26 @@ public class GamePanel extends JPanel implements Const, Runnable {
             for (Monster monster : monsters) {
                 monster.render(g2);
             }
+
+            this.renderInfo(g2);
         }
 
         Graphics g = getGraphics();
         g.drawImage(view, 0, 0, screenWidth, screenHeight, null);
         g.dispose();
+    }
+
+    public void renderInfo(Graphics2D g2) {
+        Infor infor = new CountBoom(Integer.toString(getCountBoom()), 0, 0);
+        infor.render(g2);
+        infor = new Frame(Integer.toString(Bomber.getLine()), size * 3, 0);
+        infor.render(g2);
+        infor = new Speed(Integer.toString(bomber.getSpeed()), size * 6, 0);
+        infor.render(g2);
+        infor = new CountMonster(Integer.toString(monsters.size()), size * 9, 0);
+        infor.render(g2);
+        infor = new Score(Integer.toString(score), size * 12, 0);
+        infor.render(g2);
     }
 
     public static void setCountBoom() {
@@ -205,7 +227,15 @@ public class GamePanel extends JPanel implements Const, Runnable {
         GamePanel.countBoom++;
     }
 
+    public static int getCountBoom() {
+        return countBoom;
+    }
+
     public static int getLevel() {
         return level;
+    }
+
+    public static void setScore(int score) {
+        GamePanel.score += score;
     }
 }

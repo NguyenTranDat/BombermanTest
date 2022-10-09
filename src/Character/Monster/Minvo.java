@@ -157,4 +157,9 @@ public class Minvo extends Monster {
             }
         }
     }
+
+    @Override
+    public int getScore() {
+        return 800;
+    }
 }

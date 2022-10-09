@@ -97,6 +97,11 @@ public class Balloon extends Monster {
     }
 
     @Override
+    public int getScore() {
+        return 100;
+    }
+
+    @Override
     public boolean getDie() {
         return index > image.length;
     }

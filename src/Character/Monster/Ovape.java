@@ -157,6 +157,11 @@ public class Ovape extends Monster{
     }
 
     @Override
+    public int getScore() {
+        return 2000;
+    }
+
+    @Override
     public boolean isFree(int nextX, int nextY) {
         int nextX_1 = nextX / Const.size;
         int nextY_1 = nextY / Const.size;

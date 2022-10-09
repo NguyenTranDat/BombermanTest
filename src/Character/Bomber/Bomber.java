@@ -159,4 +159,8 @@ public class Bomber extends Character {
     public void setSpeed() {
         this.speed += 2;
     }
+
+    public int getSpeed() {
+        return speed;
+    }
 }

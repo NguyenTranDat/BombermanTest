@@ -104,6 +104,11 @@ public class Oneal extends Monster{
     }
 
     @Override
+    public int getScore() {
+        return 200;
+    }
+
+    @Override
     public boolean getDie() {
         return index > image.length;
     }

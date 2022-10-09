@@ -31,4 +31,6 @@ public abstract class Monster extends Character {
             graphics2D.drawImage(score, this.x, this.y, 16 * 3, 8 * 3,null);
         }
     }
+
+    abstract public int getScore();
 }
